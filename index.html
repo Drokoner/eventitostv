@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eventitos TV — dónde ver tus equipos en España</title>
+<meta name="description" content="Tus equipos y deportes favoritos: horarios y dónde verlos en España.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="header">
+    <div>
+      <div class="logo">Eventitos <span>TV</span></div>
+      <div class="logo-sub">Dónde ver tus equipos en España</div>
+    </div>
+    <div class="header-actions">
+      <div class="days-sel" id="days-sel">
+        <button data-d="3">3d</button><button data-d="7">7d</button><button data-d="14">14d</button>
+      </div>
+      <button class="btn-primary" id="add-btn"><i class="ti ti-plus"></i> Añadir</button>
+      <button id="menu-btn" title="Opciones"><i class="ti ti-dots-vertical"></i></button>
+      <button id="refresh-btn" title="Forzar descarga de datos nuevos"><i class="ti ti-refresh"></i></button>
+    </div>
+  </header>
+
+  <!-- Menú opciones -->
+  <div class="menu-panel" id="menu-panel">
+    <button class="menu-item" id="export-btn"><i class="ti ti-download"></i> Exportar mis equipos (.json)</button>
+    <button class="menu-item" id="import-btn"><i class="ti ti-upload"></i> Importar configuración</button>
+    <input type="file" id="import-file" accept="application/json" hidden>
+  </div>
+
+  <!-- Panel añadir -->
+  <div class="add-panel" id="add-panel">
+    <div class="add-title">Buscar equipo o selección (fútbol, baloncesto…)</div>
+    <input id="search-input" placeholder="Ej: Real Madrid, Lakers, España, Boston Celtics…">
+    <div class="quick-row">
+      <span class="quick-chip" data-special="f1"><i class="ti ti-steering-wheel"></i> Fórmula 1</span>
+      <span class="quick-chip" data-special="motogp"><i class="ti ti-motorbike"></i> MotoGP</span>
+    </div>
+    <div class="results" id="results"></div>
+  </div>
+
+  <!-- Siguiendo -->
+  <div class="following-row">
+    <span class="following-label">Siguiendo</span>
+    <div id="chips"></div>
+  </div>
+
+  <!-- Eventos -->
+  <main id="content"></main>
+
+  <footer class="footer">
+    <span>Eventitos TV · fútbol: TheSportsDB · F1: Jolpica · canales: futbolenlatv.es</span>
+    <span id="last-updated"></span>
+  </footer>
+</div>
+
+<!-- Lógica (script clásico para que funcione también en local file://) -->
+<script src="js/config.js"></script>
+<script src="js/sources.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

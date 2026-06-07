@@ -1,0 +1,142 @@
+:root{
+  --bg:#0c0e17;--bg-card:#13151f;--bg-card2:#191c29;
+  --text:#eef0f8;--text2:#7b7f9e;--text3:#3e4160;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
+  --radius:12px;--radius-sm:8px;--radius-xs:6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono','Courier New',monospace;min-height:100vh;padding:36px 28px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.spin{animation:spin 1.2s linear infinite;display:inline-block}
+.fade-in{animation:fadein .3s ease both}
+
+button{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:9px 16px;font-family:inherit;font-size:12px;letter-spacing:1px;cursor:pointer;border-radius:var(--radius-sm);transition:border-color .2s,color .2s}
+button:hover{border-color:rgba(255,255,255,.28);color:var(--text)}
+.btn-primary{border-color:rgba(239,68,68,.4);color:#f87171}
+.btn-primary:hover{border-color:#ef4444;color:#fca5a5}
+input{background:var(--bg-card2);border:1px solid var(--border2);color:var(--text);font-family:inherit;font-size:14px;padding:11px 14px;border-radius:var(--radius-sm);width:100%}
+input:focus{outline:none;border-color:rgba(255,255,255,.3)}
+input::placeholder{color:var(--text3)}
+
+.wrap{max-width:880px;margin:0 auto}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:24px;border-bottom:1px solid var(--border);gap:16px;flex-wrap:wrap}
+.logo{font-family:'Bebas Neue',Impact,sans-serif;font-size:52px;letter-spacing:5px;line-height:1}
+.logo span{color:#ef4444}
+.logo-sub{font-size:11px;color:var(--text3);letter-spacing:2px;margin-top:7px}
+.header-actions{display:flex;gap:8px;align-items:center}
+.days-sel{display:inline-flex;border:1px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden}
+.days-sel button{border:none;border-radius:0;padding:9px 12px}
+.days-sel button.active{background:rgba(239,68,68,.15);color:#f87171}
+
+.menu-panel{display:none;flex-direction:column;gap:4px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:8px;margin:16px 0;max-width:340px;margin-left:auto}
+.menu-panel.open{display:flex;animation:fadein .2s ease both}
+.menu-item{text-align:left;border:none;padding:10px 12px;display:flex;align-items:center;gap:8px;border-radius:var(--radius-sm)}
+.menu-item:hover{background:var(--bg-card2)}
+
+.add-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:22px 0;display:none}
+.add-panel.open{display:block;animation:fadein .25s ease both}
+.add-title{font-size:11px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:12px}
+.quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.quick-chip{font-size:12px;padding:6px 13px;border:1px solid var(--border2);border-radius:var(--radius-sm);cursor:pointer;color:var(--text2);display:inline-flex;align-items:center;gap:6px;transition:border-color .2s,color .2s}
+.quick-chip:hover{border-color:rgba(255,255,255,.3);color:var(--text)}
+.results{margin-top:14px;display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto}
+.result{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:border-color .2s,background .2s}
+.result:hover{border-color:rgba(255,255,255,.25);background:var(--bg-card2)}
+.result img{width:32px;height:32px;object-fit:contain;flex-shrink:0;border-radius:4px;background:rgba(255,255,255,.04)}
+.result .r-name{font-size:14px;color:var(--text)}
+.result .r-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.result .r-add{margin-left:auto;font-size:11px;color:var(--text2);letter-spacing:1px}
+
+.following-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:24px 0}
+.following-label{font-size:10px;color:var(--text3);letter-spacing:2.5px;flex-shrink:0;text-transform:uppercase}
+#chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:12px;padding:6px 8px 6px 13px;border-radius:var(--radius-sm)}
+.chip .rm{cursor:pointer;opacity:.5;font-size:14px;display:inline-flex;padding:2px;border-radius:4px;transition:opacity .2s}
+.chip .rm:hover{opacity:1}
+
+.date-section{margin-bottom:2.5rem}
+.date-label{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:5px;color:var(--text3);display:flex;align-items:center;gap:9px;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:14px}
+.date-label.today{color:#ef4444}
+.today-dot{width:7px;height:7px;border-radius:50%;background:#ef4444;flex-shrink:0}
+
+.match-card{display:flex;align-items:center;gap:22px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 26px;margin-bottom:12px;transition:transform .15s,border-color .2s}
+.match-card:hover{transform:translateX(5px);border-color:var(--border2)}
+.match-card.finished{opacity:.55}
+.match-card.finished:hover{transform:none;border-color:var(--border)}
+.match-card.c-mundial{border-left:4px solid #3b82f6}
+.match-card.c-nations{border-left:4px solid #f59e0b}
+.match-card.c-eurocopa,.match-card.c-clasif,.match-card.c-uecl{border-left:4px solid #22c55e}
+.match-card.c-amistoso,.match-card.c-default{border-left:4px solid #6b7280}
+.match-card.c-champions,.match-card.c-nba{border-left:4px solid #3b82f6}
+.match-card.c-uel{border-left:4px solid #f97316}
+.match-card.c-liga{border-left:4px solid #f59e0b}
+.match-card.c-copa{border-left:4px solid #ef4444}
+.match-card.c-f1,.match-card.c-motogp{border-left:4px solid #a855f7}
+.match-card.finished{border-left-color:#3e4160!important}
+
+.time-col{flex-shrink:0;min-width:118px}
+.time-display{font-family:'Bebas Neue',Impact,sans-serif;font-size:74px;line-height:1;letter-spacing:2px;color:var(--text)}
+.time-tbd{font-size:24px;color:var(--text3);letter-spacing:2px}
+.fin-label{font-size:11px;letter-spacing:3px;color:var(--text3);text-transform:uppercase;margin-bottom:4px}
+.score-display{font-family:'Bebas Neue',Impact,sans-serif;font-size:42px;line-height:1;letter-spacing:2px;color:var(--text2)}
+
+.info-col{flex:1;min-width:0}
+.fixture{font-family:'Bebas Neue',Impact,sans-serif;font-size:32px;letter-spacing:1px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2)}
+.fixture .me{color:var(--text)}
+.fixture .vs{color:var(--text3);font-size:22px;padding:0 4px}
+.match-meta{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.comp-badge{font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 9px;border-radius:var(--radius-xs);white-space:nowrap}
+.comp-badge.c-mundial{background:rgba(59,130,246,.18);color:#60a5fa}
+.comp-badge.c-nations{background:rgba(245,158,11,.18);color:#fbbf24}
+.comp-badge.c-eurocopa,.comp-badge.c-clasif,.comp-badge.c-uecl{background:rgba(34,197,94,.18);color:#4ade80}
+.comp-badge.c-amistoso,.comp-badge.c-default{background:rgba(107,114,128,.18);color:#9ca3af}
+.comp-badge.c-champions,.comp-badge.c-nba{background:rgba(59,130,246,.18);color:#60a5fa}
+.comp-badge.c-uel{background:rgba(249,115,22,.18);color:#fb923c}
+.comp-badge.c-liga{background:rgba(245,158,11,.18);color:#fbbf24}
+.comp-badge.c-copa{background:rgba(239,68,68,.18);color:#f87171}
+.comp-badge.c-f1,.comp-badge.c-motogp{background:rgba(168,85,247,.18);color:#c084fc}
+.tag{font-size:11px;color:var(--text2);display:inline-flex;align-items:center;gap:4px}
+.tag.team{font-size:10px;color:var(--text3)}
+
+.bcast-col{flex-shrink:0;text-align:center;min-width:170px}
+.bcast-label{font-size:9px;color:var(--text3);letter-spacing:3.5px;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;justify-content:center;gap:4px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#22c55e}
+a.bcast-box{display:block;padding:14px 16px;border-radius:var(--radius);text-decoration:none;transition:filter .2s,transform .15s}
+a.bcast-box:hover{filter:brightness(1.25);transform:scale(1.03)}
+a.bcast-box.b-tve{background:rgba(0,168,85,.15)}
+a.bcast-box.b-movistar{background:rgba(0,144,208,.15)}
+a.bcast-box.b-dazn{background:rgba(255,56,48,.15)}
+a.bcast-box.b-default{background:rgba(107,114,128,.12)}
+a.bcast-box.b-none{background:rgba(107,114,128,.08)}
+.bcast-name{font-family:'Bebas Neue',Impact,sans-serif;font-size:26px;letter-spacing:1px;line-height:1.05}
+.b-tve .bcast-name{color:#34d399}
+.b-movistar .bcast-name{color:#38bdf8}
+.b-dazn .bcast-name{color:#f87171}
+.b-default .bcast-name{color:#b0b3c8}
+.b-none .bcast-name{color:#6b7280;font-size:18px}
+.bcast-detail{font-size:11px;margin-top:6px;opacity:.8}
+.b-tve .bcast-detail{color:#34d399}
+.b-movistar .bcast-detail{color:#38bdf8}
+.b-dazn .bcast-detail{color:#f87171}
+.b-default .bcast-detail,.b-none .bcast-detail{color:#9ca3af}
+
+.state{text-align:center;padding:64px 20px;color:var(--text2)}
+.state i{font-size:50px;display:block;margin-bottom:18px;color:var(--text3)}
+.state .title{font-size:18px;font-weight:500;color:var(--text2);margin-bottom:8px}
+.state .sub{font-size:12px;letter-spacing:1px;color:var(--text3)}
+.state .err{font-size:11px;color:var(--text3);background:rgba(255,255,255,.04);padding:8px 14px;border-radius:var(--radius-xs);max-width:420px;margin:12px auto 22px;font-family:monospace}
+
+.footer{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);letter-spacing:1px;margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--border);gap:12px;flex-wrap:wrap}
+
+@media(max-width:620px){
+  body{padding:24px 16px}
+  .logo{font-size:40px}
+  .time-display{font-size:54px}
+  .fixture{font-size:24px}
+  .match-card{gap:14px;padding:16px 18px}
+  .bcast-col{min-width:120px}
+  .bcast-name{font-size:21px}
+  .time-col{min-width:78px}
+}
