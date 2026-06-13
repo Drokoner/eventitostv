@@ -197,6 +197,22 @@ async function fetchFootballTeam(item){
   return fetchFootballTeamViaTSDB(item);
 }
 
+/* ─────────────── DETALLE DE UN EQUIPO (último + próximos) ─────────────── */
+async function fetchTeamDetail(item){
+  if(!WORKER_URL) throw new Error('Configura el Worker');
+  const today=spainDateStr();
+  const {data}=await cfetch(`${WORKER_URL}?fn=football&from=${spainDateStr(-14)}&to=${spainDateStr(30)}`, TTL.FIXTURES);
+  if(data.error) throw new Error(data.error);
+  const mine=(data.matches||[]).filter(m=>{
+    const h=(m.homeTeam&&m.homeTeam.name)||'', a=(m.awayTeam&&m.awayTeam.name)||'';
+    return teamMatches(h,item)||teamMatches(a,item);
+  }).map(m=>mapFdMatch(m,item, teamMatches((m.homeTeam&&m.homeTeam.name)||'',item)));
+  const sortKey=e=>e.date+(e.time==='TBD'?'99:99':e.time);
+  const finished=mine.filter(e=>e.finished && e.date<=today).sort((a,b)=>sortKey(a).localeCompare(sortKey(b)));
+  const upcoming=mine.filter(e=>!e.finished && e.date>=today).sort((a,b)=>sortKey(a).localeCompare(sortKey(b)));
+  return { ultimo: finished[finished.length-1]||null, proximos: upcoming.slice(0,6) };
+}
+
 /* ─────────────── MUNDIAL (ayer / hoy / mañana) ─────────────── */
 function mapMundialMatch(m){
   const iso=m.utcDate||'';

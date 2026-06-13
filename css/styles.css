@@ -32,6 +32,12 @@ input::placeholder{color:var(--text3)}
 .btn-mundial.active{border-color:rgba(59,130,246,.5);color:#60a5fa;background:rgba(59,130,246,.12)}
 .section-head{font-family:'Bebas Neue',Impact,sans-serif;font-size:22px;letter-spacing:2px;color:var(--text2);margin:6px 0 18px;display:flex;align-items:center;gap:8px}
 .section-head i{color:#60a5fa}
+.section-head.detail i{color:#f87171}
+.chip.clickable{cursor:pointer;transition:filter .15s}
+.chip.clickable:hover{filter:brightness(1.25)}
+.detail-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);margin:0 0 12px}
+.detail-empty{border:1px dashed var(--border2);border-radius:var(--radius);padding:20px;text-align:center;color:var(--text3);font-size:13px}
+.detail-empty .hint{font-size:11px;margin-top:6px;color:var(--text3);opacity:.7}
 
 .menu-panel{display:none;flex-direction:column;gap:4px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:8px;margin:16px 0;max-width:340px;margin-left:auto}
 .menu-panel.open{display:flex;animation:fadein .2s ease both}

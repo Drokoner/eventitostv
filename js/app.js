@@ -32,11 +32,13 @@ function renderChips(){
   const el=document.getElementById('chips');
   el.innerHTML = STATE.teams.map((t,i)=>{
     const c=chipColors(t);
-    return `<span class="chip" style="background:${c.bg};color:${c.fg}">
+    const clickable = t.type==='team' && (t.sport||'').toLowerCase().includes('soccer');
+    return `<span class="chip${clickable?' clickable':''}" data-i="${i}" style="background:${c.bg};color:${c.fg}">
       <i class="ti ${sportIcon(t.sport,t.type)}" style="font-size:13px"></i>${t.label}
       <span class="rm" data-i="${i}" title="Quitar"><i class="ti ti-x"></i></span></span>`;
   }).join('') || '<span style="color:var(--text3);font-size:12px">Nada todavía — pulsa "Añadir".</span>';
-  el.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{ STATE.teams.splice(+b.dataset.i,1); saveState(); renderChips(); loadAll(); });
+  el.querySelectorAll('.rm').forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); STATE.teams.splice(+b.dataset.i,1); saveState(); renderChips(); loadAll(); });
+  el.querySelectorAll('.chip.clickable').forEach(ch=>ch.onclick=()=>openTeamDetail(STATE.teams[+ch.dataset.i]));
 }
 
 /* ─────────────── RENDER DE EVENTOS ─────────────── */
@@ -117,19 +119,26 @@ async function loadAll(forceRefresh=false){
   }
 }
 
-/* ─────────────── VISTAS (equipos / mundial) ─────────────── */
+/* ─────────────── VISTAS (equipos / mundial / detalle) ─────────────── */
 let CURRENT_VIEW='teams';
-function setView(v){
-  CURRENT_VIEW=v;
-  const isMundial=v==='mundial';
-  document.querySelector('.following-row').style.display=isMundial?'none':'';
-  document.getElementById('days-sel').style.display=isMundial?'none':'';
-  document.getElementById('add-btn').style.display=isMundial?'none':'';
+let DETAIL_TEAM=null;
+function applyChrome(){
+  const home = CURRENT_VIEW==='teams';
+  document.querySelector('.following-row').style.display=home?'':'none';
+  document.getElementById('days-sel').style.display=home?'':'none';
+  document.getElementById('add-btn').style.display=home?'':'none';
   const mb=document.getElementById('mundial-btn');
-  mb.classList.toggle('active',isMundial);
-  mb.innerHTML = isMundial ? '<i class="ti ti-arrow-left"></i> Mis equipos' : '<i class="ti ti-trophy"></i> Mundial';
-  if(isMundial) loadMundial(); else loadAll();
+  if(home){ mb.classList.remove('active'); mb.innerHTML='<i class="ti ti-trophy"></i> Mundial'; mb.onclick=()=>showView('mundial'); }
+  else { mb.classList.add('active'); mb.innerHTML='<i class="ti ti-arrow-left"></i> Mis equipos'; mb.onclick=()=>showView('teams'); }
 }
+function showView(v){
+  CURRENT_VIEW=v; applyChrome();
+  if(v==='teams') loadAll();
+  else if(v==='mundial') loadMundial();
+  else if(v==='detail') loadTeamDetail(DETAIL_TEAM);
+}
+function openTeamDetail(item){ DETAIL_TEAM=item; showView('detail'); }
+
 async function loadMundial(){
   document.getElementById('content').innerHTML=`<div class="state"><i class="ti ti-loader spin"></i><div class="sub" style="margin-top:10px;letter-spacing:2px">cargando Mundial…</div></div>`;
   try{
@@ -141,6 +150,30 @@ async function loadMundial(){
   }catch(e){
     document.getElementById('content').innerHTML=`<div class="state"><i class="ti ti-alert-circle" style="color:#ef4444"></i><div class="title">Error al cargar el Mundial</div><div class="err">${e.message}</div></div>`;
   }
+}
+
+async function loadTeamDetail(item){
+  document.getElementById('content').innerHTML=`<div class="state"><i class="ti ti-loader spin"></i><div class="sub" style="margin-top:10px;letter-spacing:2px">cargando ${item.label}…</div></div>`;
+  try{
+    await loadAgenda();
+    const data=await fetchTeamDetail(item);
+    renderTeamDetail(item,data);
+    document.getElementById('last-updated').textContent=`${spainTimeStr()} · ${item.label}`;
+  }catch(e){
+    document.getElementById('content').innerHTML=`<div class="state"><i class="ti ti-alert-circle" style="color:#ef4444"></i><div class="title">Error al cargar ${item.label}</div><div class="err">${e.message}</div></div>`;
+  }
+}
+function renderTeamDetail(item,data){
+  const el=document.getElementById('content');
+  const icon=sportIcon(item.sport,item.type);
+  let html=`<div class="section-head detail"><i class="ti ${icon}"></i> ${item.label}</div>`;
+  html+=`<div class="detail-label">Último partido oficial</div>`;
+  html+= data.ultimo ? cardHTML(data.ultimo)
+    : `<div class="detail-empty">Sin partido reciente en competición oficial<div class="hint">(los amistosos no están en la fuente gratuita)</div></div>`;
+  html+=`<div class="detail-label" style="margin-top:26px">Próximos partidos</div>`;
+  html+= data.proximos.length ? data.proximos.map(cardHTML).join('')
+    : `<div class="detail-empty">Sin próximos partidos en competición oficial</div>`;
+  el.innerHTML=html;
 }
 
 /* ─────────────── AÑADIR / BUSCAR ─────────────── */
@@ -223,6 +256,10 @@ setupSearch();
 setupMenu();
 renderChips();
 document.getElementById('add-btn').onclick=()=>document.getElementById('add-panel').classList.toggle('open');
-document.getElementById('refresh-btn').onclick=()=>{ if(CURRENT_VIEW==='mundial'){ CACHE.clear(); AGENDA=null; loadMundial(); } else loadAll(true); };
-document.getElementById('mundial-btn').onclick=()=>setView(CURRENT_VIEW==='mundial'?'teams':'mundial');
+document.getElementById('refresh-btn').onclick=()=>{
+  if(CURRENT_VIEW==='teams'){ loadAll(true); return; }
+  CACHE.clear(); AGENDA=null;
+  if(CURRENT_VIEW==='mundial') loadMundial(); else loadTeamDetail(DETAIL_TEAM);
+};
+applyChrome();
 loadAll();
