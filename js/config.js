@@ -7,7 +7,7 @@
    Ejemplo: 'https://eventitos.tu-usuario.workers.dev'
    Si lo dejas vacío, la app usa el modo antiguo (TheSportsDB + proxy público,
    con sus limitaciones: solo 1 partido futuro por equipo). */
-const WORKER_URL = 'https://eventitos.lairaragnar.workers.dev/';
+const WORKER_URL = 'https://eventitos.lairaragnar.workers.dev';
 
 /* ── Plataformas legales en España ── */
 const URL_RTVE     = 'https://www.rtve.es/play/';

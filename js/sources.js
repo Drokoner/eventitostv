@@ -197,6 +197,36 @@ async function fetchFootballTeam(item){
   return fetchFootballTeamViaTSDB(item);
 }
 
+/* ─────────────── MUNDIAL (ayer / hoy / mañana) ─────────────── */
+function mapMundialMatch(m){
+  const iso=m.utcDate||'';
+  const {time,date}=utcToSpain(iso.slice(0,10), iso.slice(11,19));
+  const status=m.status;
+  const finished=status==='FINISHED';
+  const live=status==='IN_PLAY'||status==='PAUSED';
+  const ft=(m.score&&m.score.fullTime)||{};
+  const score=(ft.home!=null)?`${ft.home} – ${ft.away}`:'';
+  const home=(m.homeTeam&&m.homeTeam.name)||'', away=(m.awayTeam&&m.awayTeam.name)||'';
+  const grp=m.group?m.group.replace('GROUP_','Grupo '):(m.stage?m.stage.replace(/_/g,' ').toLowerCase():'');
+  const real=findChannels(home,away,date);
+  return {
+    date, time, league:'FIFA World Cup', sport:'Soccer', teamLabel:grp,
+    finished, live, score, solo:false, neutral:true,
+    homeName:tr(home), awayName:tr(away), venueTag:'',
+    broadcast: real || {name:'Ver guía', detail:'futbolenlatv.es →', cls:'b-default', url:URL_GUIA},
+  };
+}
+async function fetchMundial(){
+  if(!WORKER_URL) throw new Error('Configura el Worker para ver el Mundial');
+  const ayer=spainDateStr(-1), manana=spainDateStr(1);
+  const {data}=await cfetch(`${WORKER_URL}?fn=football&from=${ayer}&to=${manana}`, TTL.FIXTURES);
+  if(data.error) throw new Error(data.error);
+  return (data.matches||[])
+    .filter(m=>(m.competition&&m.competition.code)==='WC')
+    .map(mapMundialMatch)
+    .filter(e=> e.date>=ayer && e.date<=manana);
+}
+
 /* ─────────────── MOTOR (canal fijo: DAZN) ─────────────── */
 function makeMotorEvent(date, time, league, title, detail){
   return {date, time, league, sport:'Motorsport', teamLabel:league, finished:false, score:'',

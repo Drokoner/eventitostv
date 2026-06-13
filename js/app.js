@@ -40,35 +40,48 @@ function renderChips(){
 }
 
 /* ─────────────── RENDER DE EVENTOS ─────────────── */
+function cardHTML(m){
+  const comp=getComp(m.league,m.sport), b=m.broadcast, fin=m.finished;
+  const timeHtml = fin&&m.score
+    ? `<div class="fin-label">Finalizado</div><div class="score-display">${m.score}</div>`
+    : m.live
+      ? `<div class="fin-label" style="color:#22c55e">● En juego</div>${m.score?`<div class="score-display">${m.score}</div>`:`<div class="time-display">${m.time}</div>`}`
+      : m.time==='TBD' ? `<div class="time-display time-tbd">TBD</div>` : `<div class="time-display">${m.time}</div>`;
+  const fixture = m.solo
+    ? `<span class="me">${m.title}</span>`
+    : m.neutral
+      ? `<span>${m.homeName}</span><span class="vs"> vs </span><span>${m.awayName}</span>`
+      : (m.meIsHome
+          ? `<span class="me">${m.homeName}</span><span class="vs"> vs </span><span>${m.awayName}</span>`
+          : `<span>${m.homeName}</span><span class="vs"> vs </span><span class="me">${m.awayName}</span>`);
+  return `<div class="match-card ${comp.cls}${fin?' finished':''} fade-in">
+    <div class="time-col">${timeHtml}</div>
+    <div class="info-col"><div class="fixture">${fixture}</div><div class="match-meta">
+      <span class="comp-badge ${comp.cls}">${comp.short}</span>
+      ${m.venueTag?`<span class="tag"><i class="ti ti-${m.meIsHome?'home':'map-pin'}" style="font-size:13px"></i>${m.venueTag}</span>`:''}
+      ${m.teamLabel?`<span class="tag team">${m.teamLabel}</span>`:''}</div></div>
+    <div class="bcast-col"><div class="bcast-label">${b.real?'<span class="live-dot"></span>':''}Ver en</div>
+      <a href="${b.url}" target="_blank" rel="noopener" class="bcast-box ${b.cls}"><div class="bcast-name">${b.name}</div><div class="bcast-detail">${b.detail}</div></a>
+    </div></div>`;
+}
+function groupByDateHTML(matches, labelFn){
+  const byDate={}; matches.forEach(m=>(byDate[m.date]=byDate[m.date]||[]).push(m));
+  return Object.keys(byDate).sort().map(date=>{
+    const {label,today}=labelFn(date);
+    return `<div class="date-section"><div class="date-label ${today?'today':''}">${label}${today?'<span class="today-dot"></span>':''}</div>${byDate[date].map(cardHTML).join('')}</div>`;
+  }).join('');
+}
 function renderMatches(matches){
   const el=document.getElementById('content');
   if(!STATE.teams.length){ el.innerHTML=`<div class="state"><i class="ti ti-plus"></i><div class="title">No sigues nada todavía</div><div class="sub">Pulsa "Añadir" para empezar</div></div>`; return; }
   if(!matches.length){ el.innerHTML=`<div class="state"><i class="ti ti-calendar-off"></i><div class="title">Sin eventos en los próximos ${STATE.days} días</div><div class="sub">Prueba a ampliar el rango (7d / 14d)</div></div>`; return; }
-  const byDate={}; matches.forEach(m=>(byDate[m.date]=byDate[m.date]||[]).push(m));
-  el.innerHTML = Object.keys(byDate).sort().map(date=>{
-    const {label,today}=dateLabel(date);
-    const cards=byDate[date].map(m=>{
-      const comp=getComp(m.league,m.sport), b=m.broadcast, fin=m.finished;
-      const timeHtml = fin&&m.score
-        ? `<div class="fin-label">Finalizado</div><div class="score-display">${m.score}</div>`
-        : m.time==='TBD' ? `<div class="time-display time-tbd">TBD</div>` : `<div class="time-display">${m.time}</div>`;
-      const fixture = m.solo
-        ? `<span class="me">${m.title}</span>`
-        : (m.meIsHome
-            ? `<span class="me">${m.homeName}</span><span class="vs"> vs </span><span>${m.awayName}</span>`
-            : `<span>${m.homeName}</span><span class="vs"> vs </span><span class="me">${m.awayName}</span>`);
-      return `<div class="match-card ${comp.cls}${fin?' finished':''} fade-in">
-        <div class="time-col">${timeHtml}</div>
-        <div class="info-col"><div class="fixture">${fixture}</div><div class="match-meta">
-          <span class="comp-badge ${comp.cls}">${comp.short}</span>
-          ${m.venueTag?`<span class="tag"><i class="ti ti-${m.meIsHome?'home':'map-pin'}" style="font-size:13px"></i>${m.venueTag}</span>`:''}
-          <span class="tag team">${m.teamLabel}</span></div></div>
-        <div class="bcast-col"><div class="bcast-label">${b.real?'<span class="live-dot"></span>':''}Ver en</div>
-          <a href="${b.url}" target="_blank" rel="noopener" class="bcast-box ${b.cls}"><div class="bcast-name">${b.name}</div><div class="bcast-detail">${b.detail}</div></a>
-        </div></div>`;
-    }).join('');
-    return `<div class="date-section"><div class="date-label ${today?'today':''}">${label}${today?'<span class="today-dot"></span>':''}</div>${cards}</div>`;
-  }).join('');
+  el.innerHTML = groupByDateHTML(matches, dateLabel);
+}
+function renderMundial(matches){
+  const el=document.getElementById('content');
+  if(!matches.length){ el.innerHTML=`<div class="state"><i class="ti ti-ball-football"></i><div class="title">No hay partidos del Mundial</div><div class="sub">Ni ayer, ni hoy, ni mañana</div></div>`; return; }
+  const labelFn = ds => ds===spainDateStr(-1) ? {label:'Ayer', today:false} : dateLabel(ds);
+  el.innerHTML = `<div class="section-head"><i class="ti ti-trophy"></i> Mundial 2026 · ayer, hoy y mañana</div>` + groupByDateHTML(matches, labelFn);
 }
 
 /* ─────────────── ORQUESTADOR ─────────────── */
@@ -101,6 +114,32 @@ async function loadAll(forceRefresh=false){
     document.getElementById('last-updated').textContent = `${spainTimeStr()} ${cacheStr} ${agendaOk?'· canales en directo ✓':'· canales estimados'}`;
   }catch(e){
     document.getElementById('content').innerHTML=`<div class="state"><i class="ti ti-alert-circle" style="color:#ef4444"></i><div class="title">Error al cargar</div><div class="err">${e.message}</div><button onclick="loadAll(true)"><i class="ti ti-refresh"></i> Reintentar</button></div>`;
+  }
+}
+
+/* ─────────────── VISTAS (equipos / mundial) ─────────────── */
+let CURRENT_VIEW='teams';
+function setView(v){
+  CURRENT_VIEW=v;
+  const isMundial=v==='mundial';
+  document.querySelector('.following-row').style.display=isMundial?'none':'';
+  document.getElementById('days-sel').style.display=isMundial?'none':'';
+  document.getElementById('add-btn').style.display=isMundial?'none':'';
+  const mb=document.getElementById('mundial-btn');
+  mb.classList.toggle('active',isMundial);
+  mb.innerHTML = isMundial ? '<i class="ti ti-arrow-left"></i> Mis equipos' : '<i class="ti ti-trophy"></i> Mundial';
+  if(isMundial) loadMundial(); else loadAll();
+}
+async function loadMundial(){
+  document.getElementById('content').innerHTML=`<div class="state"><i class="ti ti-loader spin"></i><div class="sub" style="margin-top:10px;letter-spacing:2px">cargando Mundial…</div></div>`;
+  try{
+    await loadAgenda();
+    const matches=await fetchMundial();
+    matches.sort((a,b)=>(a.date+(a.time==='TBD'?'99:99':a.time)).localeCompare(b.date+(b.time==='TBD'?'99:99':b.time)));
+    renderMundial(matches);
+    document.getElementById('last-updated').textContent=`${spainTimeStr()} · Mundial 2026`;
+  }catch(e){
+    document.getElementById('content').innerHTML=`<div class="state"><i class="ti ti-alert-circle" style="color:#ef4444"></i><div class="title">Error al cargar el Mundial</div><div class="err">${e.message}</div></div>`;
   }
 }
 
@@ -184,5 +223,6 @@ setupSearch();
 setupMenu();
 renderChips();
 document.getElementById('add-btn').onclick=()=>document.getElementById('add-panel').classList.toggle('open');
-document.getElementById('refresh-btn').onclick=()=>loadAll(true);
+document.getElementById('refresh-btn').onclick=()=>{ if(CURRENT_VIEW==='mundial'){ CACHE.clear(); AGENDA=null; loadMundial(); } else loadAll(true); };
+document.getElementById('mundial-btn').onclick=()=>setView(CURRENT_VIEW==='mundial'?'teams':'mundial');
 loadAll();

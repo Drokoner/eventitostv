@@ -29,6 +29,9 @@ input::placeholder{color:var(--text3)}
 .days-sel{display:inline-flex;border:1px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden}
 .days-sel button{border:none;border-radius:0;padding:9px 12px}
 .days-sel button.active{background:rgba(239,68,68,.15);color:#f87171}
+.btn-mundial.active{border-color:rgba(59,130,246,.5);color:#60a5fa;background:rgba(59,130,246,.12)}
+.section-head{font-family:'Bebas Neue',Impact,sans-serif;font-size:22px;letter-spacing:2px;color:var(--text2);margin:6px 0 18px;display:flex;align-items:center;gap:8px}
+.section-head i{color:#60a5fa}
 
 .menu-panel{display:none;flex-direction:column;gap:4px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:8px;margin:16px 0;max-width:340px;margin-left:auto}
 .menu-panel.open{display:flex;animation:fadein .2s ease both}
